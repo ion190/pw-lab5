@@ -68,6 +68,8 @@ def create_connection(scheme: str, host: str, port: int) -> socket.socket:
 
     if scheme == "https":
         context = ssl.create_default_context()
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
         sock = context.wrap_socket(sock, server_hostname=host)
 
     return sock
