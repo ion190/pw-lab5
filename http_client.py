@@ -180,11 +180,14 @@ def fetch(url: str, redirect_count: int = 0, use_cache: bool = True, prefer: str
 
     # Check cache on first request (not on redirect hops)
     if use_cache and redirect_count == 0:
-        import cache
-        cached = cache.get(url)
-        if cached is not None:
-            print("  [cache hit]")
-            return cached
+        try:
+            import cache
+            cached = cache.get(url)
+            if cached is not None:
+                print("  [cache hit]")
+                return cached
+        except ImportError:
+            pass
 
     parts = parse_url(url)
     request = build_request(parts["host"], parts["path"], prefer=prefer)
@@ -216,7 +219,10 @@ def fetch(url: str, redirect_count: int = 0, use_cache: bool = True, prefer: str
 
     # Save to cache (only on original request, not redirect hops)
     if use_cache and redirect_count == 0:
-        import cache
-        cache.set(url, result)
+        try:
+            import cache
+            cache.set(url, result)
+        except ImportError:
+            pass
 
     return result
